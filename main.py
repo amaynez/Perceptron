@@ -58,16 +58,13 @@ print("Randomly generated line:\n",
       "x + " + str(round(B, 5))
       )
 
-
 # function to calculate f(x) based on the original line
 def f(x):
     return A * x + B
 
-
 # function to calculate f(x) based on the calculated line by the perceptron
 def f1(x):
     return (-P.weights[0] / P.weights[1]) * x - (P.weights[2] / P.weights[1])
-
 
 # define the Perceptron object
 class Perceptron:
@@ -95,8 +92,14 @@ class Perceptron:
                 weights_z_data.append(self.weights[2])
                 error_A_data.append(A - (-self.weights[0] / self.weights[1]))
                 error_B_data.append(B - (-self.weights[2] / self.weights[1]))
-            # update the weights based on the error
-            self.weights = self.weights + (learning_rate * error_) * np.array(inputs)
+                # update the weights notice that the weight for the bias
+                # is adjusted based on the error vs the line, this was
+                # found to be more precise than just using the (-1, 0, 1) error
+                self.weights[2] -= (B - (-self.weights[2] / self.weights[1]))
+                self.weights[0] += (learning_rate * error_) * inputs[0]
+                self.weights[1] += (learning_rate * error_) * inputs[1]
+            else:
+                self.weights += (learning_rate * error_) * np.array(inputs)
 
 
 # create the Perceptron
@@ -112,7 +115,6 @@ fig.suptitle('Approximating a line of form ' +
              str(round(B, 3)),
              fontsize=12
              )
-
 
 # main function to be called at each animation frame
 def animate(i_):
@@ -163,7 +165,7 @@ def animate(i_):
         # call the function to correct the weights in the Perceptron based on the error
         # the learning rate is a function of the errors vs the original line
         if len(error_A_data) and len(error_B_data):
-            learning_rate = (error_A_data[-1]**2 + error_B_data[-1]**2)/10
+            learning_rate = (error_A_data[-1] ** 2 + error_B_data[-1] ** 2) / 10
         else:
             learning_rate = 1
         P.learn([x_, y_, 1], label_, learning_rate)
@@ -180,7 +182,7 @@ def animate(i_):
     )
     error_count_text.set_text(
         'Model fit: ' +
-        str(100 - errors/points_per_frame*100) +
+        str(100 - errors / points_per_frame * 100) +
         "%, #err: " +
         str(errors) +
         ", sum(err^2): " +
@@ -214,7 +216,6 @@ def animate(i_):
 
     # plot the approximation error for B
     axs[1, 1].plot(error_B_data)
-
 
 # start the animation; use the interval parameter to pause between iterations
 ani = animation.FuncAnimation(fig, animate, interval=1)
