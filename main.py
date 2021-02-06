@@ -51,8 +51,8 @@ weights_x_data, weights_y_data, weights_z_data = [], [], []
 total_learned_points = 0
 
 # create the random original line
-A = rnd.uniform(-1, 1)
-B = rnd.uniform(-1, 1)
+A = rnd.uniform(-10, 10)
+B = rnd.uniform(-10, 10)
 print("Randomly generated line:\n",
       "y = " + str(round(A, 5)) +
       "x + " + str(round(B, 5))
@@ -137,9 +137,9 @@ def animate(i_):
 
     # main loop to generate the points to be checked and learned
     for j in range(points_per_frame):
-        # create a random point between x=-1, x=1 and y=-3, y=3
-        x_ = rnd.uniform(-1, 1)
-        y_ = rnd.uniform(-3, 3)
+        # create a random point between x=-10, x=10 and y=-30, y=30
+        x_ = rnd.uniform(-10, 10)
+        y_ = rnd.uniform(-100, 100)
         # assign the target value or label for the point
         if y_ >= f(x_):
             label_ = 1
@@ -161,7 +161,14 @@ def animate(i_):
             else:
                 coords.append([x_, y_, 'b'])
         # call the function to correct the weights in the Perceptron based on the error
-        P.learn([x_, y_, 1], label_, 0.01 / (i_ + 1))
+        # P.learn([x_, y_, 1], label_, 100 / (i_ + 1))
+        if len(error_A_data) and len(error_B_data):
+            learning_rate = ((error_A_data[-1]**2) + error_B_data[-1]**2)
+        else:
+            learning_rate = 1
+        P.learn([x_, y_, 1],
+                label_,
+                learning_rate)
     # keep the count of total points being learned
     global total_learned_points
     total_learned_points += (i_ + 1) * points_per_frame
@@ -171,10 +178,12 @@ def animate(i_):
         "Total learned points: " +
         total_points_txt.format(points=total_learned_points) +
         ", Learn_rate: " +
-        str(round(0.01 / (i_ + 1), 5))
+        str(round(learning_rate, 3))
     )
     error_count_text.set_text(
-        "#err: " +
+        'Model fit: ' +
+        str(100 - errores/points_per_frame*100) +
+        "%, #err: " +
         str(errores) +
         ", sum(err^2): " +
         str(error_total)
@@ -193,10 +202,10 @@ def animate(i_):
     axs[0, 0].scatter(np.float64(coords[:][0]), np.float64(coords[:][1]), s=4, c=coords[:][2])
 
     # plot the original line with a width of 5 (should appear blue in the plot)
-    axs[0, 0].plot([-1, 1], [f(-1), f(1)], lw=5)
+    axs[0, 0].plot([-10, 10], [f(-10), f(10)], lw=5)
 
     # plot the current learned line (should appear orange)
-    axs[0, 0].plot([-1, 1], [f1(-1), f1(1)])
+    axs[0, 0].plot([-10, 10], [f1(-10), f1(10)])
 
     # plot the squared error
     sqr_error_data.append(error_total)
