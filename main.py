@@ -217,6 +217,7 @@ def animate(i_):
     # plot the approximation error for B
     axs[1, 1].plot(error_B_data)
 
+
 # start the animation; use the interval parameter to pause between iterations
 ani = animation.FuncAnimation(fig, animate, interval=1)
 plt.show()
