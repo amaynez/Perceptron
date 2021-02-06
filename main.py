@@ -53,6 +53,8 @@ total_learned_points = 0
 # create the random original line
 A = rnd.uniform(-10, 10)
 B = rnd.uniform(-10, 10)
+# A = 9.638
+# B = -9.369
 print("Randomly generated line:\n",
       "y = " + str(round(A, 5)) +
       "x + " + str(round(B, 5))
@@ -70,7 +72,10 @@ def f1(x):
 class Perceptron:
     def __init__(self):
         # initialize the 3 weights with zero
-        self.weights = np.zeros(3)
+        self.weights = np.zeros(3, dtype=np.float64)
+        weights_x_data.append(self.weights[0])
+        weights_y_data.append(self.weights[1])
+        weights_z_data.append(self.weights[2])
 
     # calculate the estimated result based on inputs
     def guess(self, x_, y_):
@@ -81,7 +86,7 @@ class Perceptron:
             return 0
 
     # adjust weights based on inputs and target value (label)
-    def learn(self, inputs: [], label_, learning_rate=0.0001):
+    def learn(self, inputs: [], label_, learning_rate=0.001):
         error_ = label_ - self.guess(inputs[0], inputs[1])
         if error_:
             # only log the weights and A, B errors when the point presents error
@@ -95,7 +100,7 @@ class Perceptron:
                 # update the weights notice that the weight for the bias
                 # is adjusted based on the error vs the line, this was
                 # found to be more precise than just using the (-1, 0, 1) error
-                self.weights[2] -= (B - (-self.weights[2] / self.weights[1]))
+                self.weights[2] -= (B - (-self.weights[2] / self.weights[1])) * 20
                 self.weights[0] += (learning_rate * error_) * inputs[0]
                 self.weights[1] += (learning_rate * error_) * inputs[1]
             else:
@@ -165,7 +170,7 @@ def animate(i_):
         # call the function to correct the weights in the Perceptron based on the error
         # the learning rate is a function of the errors vs the original line
         if len(error_A_data) and len(error_B_data):
-            learning_rate = (error_A_data[-1] ** 2 + error_B_data[-1] ** 2) / 10
+            learning_rate = (error_A_data[-1] ** 2)
         else:
             learning_rate = 1
         P.learn([x_, y_, 1], label_, learning_rate)
@@ -175,10 +180,12 @@ def animate(i_):
     # Set the text for the chart headers
     total_points_text = "{points:,}"
     Main_plot_text.set_text(
-        "Total learned points: " +
+        '# points: ' +
         total_points_text.format(points=total_learned_points) +
-        ", Learn_rate: " +
-        str(round(learning_rate, 3))
+        '; line: ' +
+        str(round(-P.weights[0]/P.weights[1], 3)) +
+        ' x + ' +
+        str(round(-P.weights[2]/P.weights[1], 3)),
     )
     error_count_text.set_text(
         'Model fit: ' +
@@ -189,11 +196,13 @@ def animate(i_):
         str(error_total)
     )
     error_A_text.set_text(
-        "Line approximation error A:" +
-        str(round(A - (-P.weights[0] / P.weights[1]), 5))
+        "Line error A:" +
+        str(round(A - (-P.weights[0] / P.weights[1]), 5)) +
+        "; Learning Rate: " +
+        str(round(learning_rate, 3))
     )
     error_B_text.set_text(
-        "Line approximation error B:" +
+        "Line error B:" +
         str(round(B - (-P.weights[2] / P.weights[1]), 5))
     )
 
@@ -237,10 +246,14 @@ if P.weights[1]:
           " B: " +
           str(round(B - (-P.weights[2] / P.weights[1]), 5))
           )
+    print("Final 2 weights:")
+    print(weights_x_data[-2], weights_x_data[-1])
+    print(weights_y_data[-2], weights_y_data[-1])
+    print(weights_z_data[-2], weights_z_data[-1])
 
 # create a new 3d chart with the movement of the 3 weights
 fig2 = plt.figure()
-fig2.suptitle('Adjustment of weights through time', fontsize=12)
+fig2.suptitle('Adjustment of weights through time; ' + str(len(weights_x_data)) + ' changes', fontsize=12)
 fig2.canvas.set_window_title('Learned using '
                              + total_points_txt.format(points=total_learned_points)
                              + ' points')
