@@ -9,20 +9,20 @@ The neuron is called Perceptron and has 3 inputs and weights to calculate its ou
 
     Input 3 or the bias is required for lines that do not cross the origin (0,0)
 
-The Perceptron starts with random float weights from -1 to 1 for each input and learns
+The Perceptron starts with all weights equal to zero and learns
 using 1,000 random points per each iteration.
 
 The output of the perceptron is calculated based on the following
-    if x * weight_x + y weight_y + weight_bias is positive then 1 else -1
+    if x * weight_x + y weight_y + weight_bias is positive then 1 else 0
 
 The error for each point is calculated as the expected outcome of the perceptron minus the real outcome
 therefore there are only 3 possible error values:
 
     Expected    Calculated  Error
-    1           -1          2
+    1           -1          1
     1           1           0
     -1          -1          0
-    -1          1           -2
+    -1          1           -1
 
 With every point that is learned if the error is not 0 the weights are adjusted according to:
     New_weight = Old_weight + error * input * learning_rate
@@ -58,19 +58,21 @@ print("Randomly generated line:\n",
       "x + " + str(round(B, 5))
       )
 
+
 # function to calculate f(x) based on the original line
 def f(x):
     return A * x + B
+
 
 # function to calculate f(x) based on the calculated line by the perceptron
 def f1(x):
     return (-P.weights[0] / P.weights[1]) * x - (P.weights[2] / P.weights[1])
 
+
 # define the Perceptron object
 class Perceptron:
     def __init__(self):
-        # initialize the 3 weights with random values between -1,1
-        # self.weights = [rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-1, 1)]
+        # initialize the 3 weights with zero
         self.weights = np.zeros(3)
 
     # calculate the estimated result based on inputs
@@ -79,7 +81,7 @@ class Perceptron:
         if value >= 0:
             return 1
         else:
-            return -1
+            return 0
 
     # adjust weights based on inputs and target value (label)
     def learn(self, inputs: [], label_, learning_rate=0.0001):
@@ -142,7 +144,7 @@ def animate(i_):
         if y_ >= f(x_):
             label_ = 1
         else:
-            label_ = -1
+            label_ = 0
         # get the perceptron computation
         guess_ = P.guess(x_, y_)
         # calculate the error
@@ -152,36 +154,38 @@ def animate(i_):
             coords.append([x_, y_, 'r'])
             errores += 1
             error_total += error_ ** 2
-        # if there is not an error add a green point to the plot
+        # if there is not an error add a green point to the plot if the dot is above and blue if below
         else:
-            coords.append([x_, y_, 'g'])
+            if guess_:
+                coords.append([x_, y_, 'g'])
+            else:
+                coords.append([x_, y_, 'b'])
         # call the function to correct the weights in the Perceptron based on the error
         P.learn([x_, y_, 1], label_, 0.01 / (i_ + 1))
     # keep the count of total points being learned
     global total_learned_points
     total_learned_points += (i_ + 1) * points_per_frame
     # Set the text for the chart headers
+    total_points_txt = "{points:,}"
     line_error_text.set_text(
-        "Line error A:" +
-        str(round(A - (-P.weights[0] / P.weights[1]), 5)) +
-        " B:" +
-        str(round(B - (-P.weights[2] / P.weights[1]), 5)) +
-        ", Lrn_rate: " +
+        "Total learned points: " +
+        total_points_txt.format(points=total_learned_points) +
+        ", Learn_rate: " +
         str(round(0.01 / (i_ + 1), 5))
     )
     error_count_text.set_text(
         "#err: " +
         str(errores) +
         ", sum(err^2): " +
-        str(error_total) +
-        ", Points:" +
-        str(total_learned_points)
+        str(error_total)
     )
     error_A_text.set_text(
-        "Approximation error A"
+        "Line approximation error A:" +
+        str(round(A - (-P.weights[0] / P.weights[1]), 5))
     )
     error_B_text.set_text(
-        "Approximation error B"
+        "Line approximation error B:" +
+        str(round(B - (-P.weights[2] / P.weights[1]), 5))
     )
 
     # plot dots (green for correct guess, red for incorrect guess)
@@ -203,6 +207,7 @@ def animate(i_):
 
     # plot the approximation error for B
     axs[1, 1].plot(error_B_data)
+
 
 # start the animation; use the interval parameter to pause between iterations
 ani = animation.FuncAnimation(fig, animate, interval=1)
