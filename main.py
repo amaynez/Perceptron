@@ -97,8 +97,7 @@ class Perceptron:
                 error_B_data.append(B - (-self.weights[2] / self.weights[1]))
             # update the weights based on the error
             self.weights = self.weights + (learning_rate * error_) * np.array(inputs)
-            # for i_ in range(len(self.weights)):
-            #     self.weights[i_] += (inputs[i_] * error_ * learning_rate)
+
 
 # create the Perceptron
 P = Perceptron()
@@ -114,10 +113,11 @@ fig.suptitle('Approximating a line of form ' +
              fontsize=12
              )
 
+
 # main function to be called at each animation frame
 def animate(i_):
     # initialize the error counting variables per frame
-    errores = 0
+    errors = 0
     error_total = 0
 
     # initialize an array to collect all the points to be plotted
@@ -130,14 +130,14 @@ def animate(i_):
     axs[1, 1].clear()
 
     # initialize the header text variables for each chart
-    line_error_text = axs[0, 0].text(0.01, 1.02, '', transform=axs[0, 0].transAxes)
+    Main_plot_text = axs[0, 0].text(0.01, 1.02, '', transform=axs[0, 0].transAxes)
     error_count_text = axs[0, 1].text(0.01, 1.02, '', transform=axs[0, 1].transAxes)
     error_A_text = axs[1, 0].text(0.01, 1.02, '', transform=axs[1, 0].transAxes)
     error_B_text = axs[1, 1].text(0.01, 1.02, '', transform=axs[1, 1].transAxes)
 
     # main loop to generate the points to be checked and learned
     for j in range(points_per_frame):
-        # create a random point between x=-10, x=10 and y=-30, y=30
+        # create a random point between x=-10, x=10 and y=-100, y=100
         x_ = rnd.uniform(-10, 10)
         y_ = rnd.uniform(-100, 100)
         # assign the target value or label for the point
@@ -152,7 +152,7 @@ def animate(i_):
         # if there is an error, count it and add a red point to the plot
         if error_:
             coords.append([x_, y_, 'r'])
-            errores += 1
+            errors += 1
             error_total += error_ ** 2
         # if there is not an error add a green point to the plot if the dot is above and blue if below
         else:
@@ -161,30 +161,28 @@ def animate(i_):
             else:
                 coords.append([x_, y_, 'b'])
         # call the function to correct the weights in the Perceptron based on the error
-        # P.learn([x_, y_, 1], label_, 100 / (i_ + 1))
+        # the learning rate is a function of the errors vs the original line
         if len(error_A_data) and len(error_B_data):
-            learning_rate = ((error_A_data[-1]**2) + error_B_data[-1]**2)
+            learning_rate = (error_A_data[-1]**2 + error_B_data[-1]**2)/10
         else:
             learning_rate = 1
-        P.learn([x_, y_, 1],
-                label_,
-                learning_rate)
+        P.learn([x_, y_, 1], label_, learning_rate)
     # keep the count of total points being learned
     global total_learned_points
     total_learned_points += (i_ + 1) * points_per_frame
     # Set the text for the chart headers
-    total_points_txt = "{points:,}"
-    line_error_text.set_text(
+    total_points_text = "{points:,}"
+    Main_plot_text.set_text(
         "Total learned points: " +
-        total_points_txt.format(points=total_learned_points) +
+        total_points_text.format(points=total_learned_points) +
         ", Learn_rate: " +
         str(round(learning_rate, 3))
     )
     error_count_text.set_text(
         'Model fit: ' +
-        str(100 - errores/points_per_frame*100) +
+        str(100 - errors/points_per_frame*100) +
         "%, #err: " +
-        str(errores) +
+        str(errors) +
         ", sum(err^2): " +
         str(error_total)
     )
@@ -199,7 +197,7 @@ def animate(i_):
 
     # plot dots (green for correct guess, red for incorrect guess)
     coords = np.transpose(coords)
-    axs[0, 0].scatter(np.float64(coords[:][0]), np.float64(coords[:][1]), s=4, c=coords[:][2])
+    axs[0, 0].scatter(np.float64(coords[:][0]), np.float64(coords[:][1]), s=3, c=coords[:][2])
 
     # plot the original line with a width of 5 (should appear blue in the plot)
     axs[0, 0].plot([-10, 10], [f(-10), f(10)], lw=5)
@@ -220,7 +218,6 @@ def animate(i_):
 
 # start the animation; use the interval parameter to pause between iterations
 ani = animation.FuncAnimation(fig, animate, interval=1)
-plt.ion = 0
 plt.show()
 
 # once the animation window is closed output to console the final line and error
