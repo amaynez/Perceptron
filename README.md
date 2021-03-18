@@ -1,4 +1,5 @@
-#Single Neuron Neural Network - Perceptron
+# Single Neuron Neural Network - Perceptron
+
 [![Language](https://img.shields.io/badge/language-python-blue.svg?style=flat
 )](https://www.python.org)
 [![Module](https://img.shields.io/badge/module-matplotlib-brightgreen.svg?style=flat
@@ -25,11 +26,12 @@ The output of the perceptron is calculated based on stochastic gradient descent 
 
 The error for each point is calculated as the expected outcome of the perceptron minus the real outcome therefore there are only 3 possible error values:
 
-    Expected    Calculated  Error
-    1           -1          1
-    1           1           0
-    -1          -1          0
-    -1          1           -1
+|Expected|Calculated|Error|
+|:---:|:---:|:---:|
+|1|-1|1|
+|1|1|0|
+|-1|-1|0|
+|-1|1|-1|
 
 With every point that is learned if the error is not 0 the weights are adjusted according to:
 
