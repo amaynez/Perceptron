@@ -1,4 +1,10 @@
-<a href="https://amaynez.github.io/Perceptron/">Single Neuron Neural Network - Perceptron</a>
+#Single Neuron Neural Network - Perceptron
+[![Language](https://img.shields.io/badge/language-python-blue.svg?style=flat
+)](https://www.python.org)
+[![Module](https://img.shields.io/badge/module-matplotlib-brightgreen.svg?style=flat
+)](https://matplotlib.org/)
+[![Release](https://img.shields.io/badge/release-v1.0-orange.svg?style=flat
+)](https://amaynez.github.io/Perceptron/)
 
 <a href="https://amaynez.github.io/Perceptron/"><img src='Learning_1000_points_per_iteration.png'></a>
 
