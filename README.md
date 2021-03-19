@@ -9,7 +9,7 @@
 [![Release](https://img.shields.io/badge/release-v1.0-orange.svg?style=flat
 )](https://amaynez.github.io/Perceptron/)
 
-<a href="https://amaynez.github.io/Perceptron/"><img src='Learning_1000_points_per_iteration.png'></a>
+<a href="https://amaynez.github.io/single-neuron-perceptron/"><img src='Learning_1000_points_per_iteration.png'></a>
 
 This program creates a single neuron neural network tuned to guess if a point is above or below a randomly generated line and generates a visualization based on graphs to see how the neural network is learning through time.
 
